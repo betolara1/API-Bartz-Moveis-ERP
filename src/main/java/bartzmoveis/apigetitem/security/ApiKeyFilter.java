@@ -26,21 +26,7 @@ public class ApiKeyFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain chain) throws ServletException, IOException {
-        // Allow unauthenticated access to Swagger/OpenAPI, webjar resources and
-        // actuator
-        String path = request.getRequestURI();
-        String method = request.getMethod();
 
-        if ("OPTIONS".equalsIgnoreCase(method)
-                || path.startsWith(request.getContextPath() + "/v3/api-docs")
-                || path.startsWith(request.getContextPath() + "/swagger")
-                || path.startsWith(request.getContextPath() + "/webjars")
-                || path.startsWith(request.getContextPath() + "/swagger-ui")
-                || path.equals(request.getContextPath() + "/swagger-ui.html")
-                || path.startsWith(request.getContextPath() + "/actuator")) {
-            chain.doFilter(request, response);
-            return;
-        }
 
         // Obtém a chave API do header "X-API-KEY"
         String key = request.getHeader("X-API-KEY");

@@ -1,45 +1,58 @@
 package bartzmoveis.apigetitem.service;
 
 import java.util.List;
-import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import bartzmoveis.apigetitem.model.Cor;
-import bartzmoveis.apigetitem.repository.CorRepository;
 import org.springframework.transaction.annotation.Transactional;
+
+import bartzmoveis.apigetitem.dto.CorDTO;
 
 @Service
 public class CorService {
-    private CorRepository corRepository;
-    public CorService(CorRepository corRepository){
-        this.corRepository = corRepository;
+    private JdbcTemplate jdbcTemplate;
+    public CorService(JdbcTemplate jdbcTemplate){
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Transactional(readOnly = true)
-    public Page<Cor> listAll(Pageable pageable){
-        return corRepository.findAll(pageable);
+    public List<CorDTO> listAll(){
+        String sql = "SELECT SIGLA_COR, DESCRICAO FROM SCHEMA.COR";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            CorDTO dto = new CorDTO();
+            dto.setSiglaCor(rs.getString("SIGLA_COR"));
+            dto.setDescricao(rs.getString("DESCRICAO"));
+            return dto;
+        });
     }
 
     @Transactional(readOnly = true)
-    public Optional<Cor> findBySiglaCor(String siglaCor){
-        return corRepository.findBySiglaCor(siglaCor);
+    public List<CorDTO> findBySiglaCor(String siglaCor){
+        String sql = "SELECT SIGLA_COR, DESCRICAO FROM SCHEMA.COR" + "WHERE UPPER(SIGLA_COR) LIKE UPPER(?)";
+        
+        String formattedSql = "%" + siglaCor + "%";
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            CorDTO dto = new CorDTO();
+            dto.setSiglaCor(rs.getString("SIGLA_COR"));
+            dto.setDescricao(rs.getString("DESCRICAO"));
+            return dto;
+        }, formattedSql);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Cor> findByDescricao(String descricao){
-        return corRepository.findByDescricao(descricao);
-    }
+    public List<CorDTO> findByDescricao(String descricao){
+        String sql = "SELECT SIGLA_COR, DESCRICAO FROM SCHEMA.COR" + "WHERE UPPER(DESCRICAO) LIKE UPPER(?)";
 
-    @Transactional(readOnly = true)
-    public List<Cor> searchBySiglaCor(String siglaCor){
-        return corRepository.findBySiglaCorContaining(siglaCor);
-    }
+        String formattedSql = "%" + descricao + "%";
 
-    @Transactional(readOnly = true)
-    public List<Cor> searchByDescricao(String descricao){
-        return corRepository.findByDescricaoContaining(descricao);
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            CorDTO dto = new CorDTO();
+            dto.setSiglaCor(rs.getString("SIGLA_COR"));
+            dto.setDescricao(rs.getString("DESCRICAO"));
+            return dto;
+        }, formattedSql);
     }
 }

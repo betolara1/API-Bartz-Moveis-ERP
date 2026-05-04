@@ -24,10 +24,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import bartzmoveis.apigetitem.model.Item;
-import bartzmoveis.apigetitem.repository.ItemRepository;
 import bartzmoveis.apigetitem.service.ItemService;
 import bartzmoveis.apigetitem.config.ApiKeyProperties;
+import bartzmoveis.apigetitem.dto.ItemDTO;
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc(addFilters = false) // Desabilita o Spring Security
@@ -39,19 +38,16 @@ public class BartzErpControllerTest {
     @MockitoBean
     private ItemService service;
 
-    @MockitoBean
-    private ItemRepository repository;
-
     // Fazendo MockBean da configuração de segurança para evitar
     // NoSuchBeanDefinitionException
     @MockitoBean
     private ApiKeyProperties apiKeyProperties;
 
-    private Item mockItem;
+    private ItemDTO mockItem;
 
     @BeforeEach
     void setUp() {
-        mockItem = mock(Item.class);
+        mockItem = mock(ItemDTO.class);
         org.mockito.Mockito.lenient().when(mockItem.getCodeItem()).thenReturn("10.01");
         org.mockito.Mockito.lenient().when(mockItem.getDescription()).thenReturn("Armario");
     }
