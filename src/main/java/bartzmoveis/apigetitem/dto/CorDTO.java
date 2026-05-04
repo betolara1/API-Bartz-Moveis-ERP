@@ -1,15 +1,14 @@
 package bartzmoveis.apigetitem.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
 public class CorDTO {
     
-    @Column(name = "SIGLA_COR")
+    //(name = "SIGLA_COR")
     private String siglaCor;
 
-    @Column(name = "DESCRICAO")
+    //(name = "DESCRICAO")
     private String descricao;
 
     public CorDTO(){}

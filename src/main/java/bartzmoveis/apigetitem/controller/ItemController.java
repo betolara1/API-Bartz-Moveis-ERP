@@ -19,7 +19,7 @@ import bartzmoveis.apigetitem.service.ItemService;
 // O @RequestMapping define a rota base para todos os endpoints deste
 // controlador, ou seja,
 // todos os endpoints começarão com /item
-@RequestMapping("/item")
+@RequestMapping("/itens")
 
 // O @CrossOrigin é usado para permitir requisições de origens específicas, como
 // o frontend
@@ -44,8 +44,8 @@ public class ItemController {
 
 
     // URL: /item/search-code?code=10.01
-    @GetMapping("/codigo")
-    public ResponseEntity<List<ItemDTO>> searchByCode(@RequestParam("code") String query) {
+    @GetMapping("/search")
+    public ResponseEntity<List<ItemDTO>> searchByCode(@RequestParam("codigo") String query) {
         List<ItemDTO> results = service.findByCode(query);
 
         if (results.isEmpty()) {
@@ -55,8 +55,8 @@ public class ItemController {
     }
 
     // URL: /item/search-desc?desc=branco
-    @GetMapping("/descricao")
-    public ResponseEntity<List<ItemDTO>> searchByDescription(@RequestParam("desc") String query) {
+    @GetMapping("/search")
+    public ResponseEntity<List<ItemDTO>> searchByDescription(@RequestParam("descricao") String query) {
         List<ItemDTO> results = service.findByDescription(query);
 
         if (results.isEmpty()) {

@@ -13,7 +13,7 @@ import bartzmoveis.apigetitem.dto.CorDTO;
 import bartzmoveis.apigetitem.service.CorService;
 
 @RestController
-@RequestMapping("/cor")
+@RequestMapping("/cores")
 @CrossOrigin(origins = {"http://192.168.1.10:50000", "http://localhost:5173", "file://"})
 public class CorController {
     
@@ -33,8 +33,8 @@ public class CorController {
         return ResponseEntity.ok(listCor);
     }
 
-    @GetMapping("/cor")
-    public ResponseEntity<List<CorDTO>> findBySiglaCor(@RequestParam("code") String query){
+    @GetMapping("/search")
+    public ResponseEntity<List<CorDTO>> findBySiglaCor(@RequestParam("codigo") String query){
         List<CorDTO> results = service.findBySiglaCor(query);
         if(results.isEmpty()){
             return ResponseEntity.noContent().build();
@@ -42,8 +42,8 @@ public class CorController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("/descricao")
-    public ResponseEntity<List<CorDTO>> searchByDescricao(@RequestParam("desc") String query){
+    @GetMapping("/search")
+    public ResponseEntity<List<CorDTO>> searchByDescricao(@RequestParam("descricao") String query){
         List<CorDTO> results = service.findByDescricao(query);
         if(results.isEmpty()){
             return ResponseEntity.noContent().build();

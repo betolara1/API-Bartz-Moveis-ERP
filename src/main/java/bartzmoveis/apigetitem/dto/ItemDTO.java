@@ -1,18 +1,17 @@
 package bartzmoveis.apigetitem.dto;
 
-import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
 public class ItemDTO {
     
-    @Column(name = "ITEM")
+    //(name = "ITEM")
     private String codeItem;
     
-    @Column(name = "DESCRICAO")
+    //(name = "DESCRICAO")
     private String description;
     
-    @Column(name = "REF_COMERCIAL")
+    //(name = "REF_COMERCIAL")
     private String refComercial;
 
     public ItemDTO(){}
