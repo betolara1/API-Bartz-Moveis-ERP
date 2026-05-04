@@ -82,7 +82,7 @@
 
 		<dependency>
 			<groupId>com.betolara1</groupId>
-			<artifactId>JWT-Package</artifactId>
+			<artifactId>jwt-package</artifactId>
 			<version>1.0.3</version>
 		</dependency>
 
