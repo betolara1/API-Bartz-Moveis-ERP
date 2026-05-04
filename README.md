@@ -8,7 +8,7 @@
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![IBM DB2](https://img.shields.io/badge/IBM_DB2-12.1-052FAD?style=for-the-badge&logo=ibm&logoColor=white)](https://www.ibm.com/products/db2)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
-[![API Key](https://img.shields.io/badge/Auth-API_Key-000000?style=for-the-badge&logo=lock&logoColor=white)](#-segurança)
+[![JWT Auth](https://img.shields.io/badge/Auth-JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](#-segurança)
 [![Swagger](https://img.shields.io/badge/Swagger-OpenAPI_3-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](https://swagger.io/)
 
 </div>
@@ -32,7 +32,7 @@ A API encapsula o acesso nativo e restrito do DB2 entregando serviços RESTful p
 Construída com foco em **produção real**, a API incorpora:
 
 - ✅ **Arquitetura em camadas** (Controller → Service → Repository → Model)
-- ✅ **Segurança Stateless** via API Key customizada
+- ✅ **Segurança Stateless** via JWT (Pacote Modular `jwt-package`)
 - ✅ **Camada Anticorrupção** isolando o legado DB2
 - ✅ **Containerização completa** com Docker e Docker Compose
 - ✅ **Documentação interativa** com Swagger / OpenAPI 3
@@ -75,40 +75,37 @@ flowchart TB
 
 ## 🚀 Endpoints da API
 
-### 📦 Itens (`/api/item`)
-| Método | Endpoint | Descrição | Auth |
-|--------|----------|-----------|------|
-| `GET` | `/api/item` | Lista todos (paginado) | ✅ |
-| `GET` | `/api/item/find-by-code` | Busca por código exato | ✅ |
-| `GET` | `/api/item/find-by-description` | Busca por descrição exata | ✅ |
-| `GET` | `/api/item/search-code` | Busca parcial por código | ✅ |
-| `GET` | `/api/item/search-desc` | Busca parcial por descrição | ✅ |
+### 📦 Itens (`/itens`)
+| Método | Endpoint | Parâmetro | Descrição | Auth |
+|--------|----------|-----------|-----------|------|
+| `GET` | `/itens` | - | Lista todos | ✅ |
+| `GET` | `/itens/search` | `codigo` | Busca por código exato ou parcial | ✅ |
+| `GET` | `/itens/search` | `descricao` | Busca por descrição exata ou parcial | ✅ |
 
-### 🎨 Cores (`/api/cor`)
-| Método | Endpoint | Descrição | Auth |
-|--------|----------|-----------|------|
-| `GET` | `/api/cor` | Lista todas (paginado) | ✅ |
-| `GET` | `/api/cor/find-by-sigla` | Busca por sigla exata | ✅ |
-| `GET` | `/api/cor/find-by-descricao` | Busca por descrição exata | ✅ |
-| `GET` | `/api/cor/search-sigla` | Busca parcial por sigla | ✅ |
-| `GET` | `/api/cor/search-descricao` | Busca parcial por descrição | ✅ |
+### 🎨 Cores (`/cores`)
+| Método | Endpoint | Parâmetro | Descrição | Auth |
+|--------|----------|-----------|-----------|------|
+| `GET` | `/cores` | - | Lista todas | ✅ |
+| `GET` | `/cores/search` | `codigo` | Busca por sigla/código | ✅ |
+| `GET` | `/cores/search` | `descricao` | Busca por descrição | ✅ |
 
 ---
 
 ## 🔐 Segurança
 
-A autenticação é baseada em **API Key (Stateless)**. O cliente deve incluir uma chave secreta em cada requisição via header HTTP.
+A autenticação é baseada em **JWT (JSON Web Token)** de forma totalmente Stateless. O projeto utiliza o pacote modular `jwt-package` para gerenciar a segurança de forma eficiente.
 
 **Header Obrigatório:**
-```
-X-API-KEY: <sua_chave_secreta>
+```http
+Authorization: Bearer <seu_token_jwt>
 ```
 
 **Fluxo Interno:**
-1. O `ApiKeyFilter` intercepta a requisição.
-2. Valida o valor do header contra a propriedade configurada (`api.key`).
-3. Se válido, injeta a `Authentication` no `SecurityContextHolder`.
-4. Se inválido ou ausente, retorna `401 Unauthorized`.
+1. O `JwtAuthFilter` intercepta a requisição.
+2. Valida o token usando a `jwt.secret-key` definida no `.env`.
+3. Verifica se o token não expirou e se a assinatura é válida.
+4. Se válido, libera o acesso aos dados do DB2.
+5. Se inválido, ausente ou expirado, retorna `401 Unauthorized`.
 
 ---
 
@@ -137,7 +134,9 @@ Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 # .env
-API_KEY=sua_chave_secreta_aqui
+jwt.secret-key=sua_chave_secreta_com_no_minimo_32_chars
+jwt.excluded-paths=/auth/login, /swagger-ui/**, /v3/api-docs/**
+jwt.expiration-time=43200000
 DB_URL=jdbc:db2://seu_host:50000/nomedobanco
 DB_USERNAME=usuario_db2
 DB_PASSWORD=senha_db2
@@ -202,7 +201,8 @@ A API interage com as tabelas principais do ERP:
 | Java | 17 (LTS) | Linguagem principal |
 | Spring Boot | 3.4.2 | Framework web e IoC |
 | Spring Data JPA | — | ORM e persistência |
-| Spring Security | 6.2.x | Controle de acesso (API Key) |
+| Spring Security | 6.4.x | Controle de acesso via JWT |
+| JWT Package | 1.0.3 | Pacote customizado para gestão de tokens |
 | IBM DB2 | 12.1 | Banco de dados legado |
 | SpringDoc OpenAPI | 2.0 | Documentação Swagger |
 | Lombok | — | Redução de boilerplate |
@@ -214,9 +214,9 @@ A API interage com as tabelas principais do ERP:
 
 ## 🆘 Solução de Problemas
 
-### Erro: `Could not resolve placeholder 'API_KEY'`
-- Verifique se o arquivo `.env` está na mesma pasta do JAR ou na raiz do projeto.
-- Certifique-se de que a variável `API_KEY` está definida sem espaços extras.
+### Erro: `JWT signature does not match`
+- Verifique se a `jwt.secret-key` no `.env` é exatamente a mesma que foi usada para gerar o token.
+- Certifique-se de que a chave tem pelo menos 32 caracteres.
 
 ---
 

@@ -44,18 +44,17 @@ public class ItemController {
 
 
     // URL: /item/search-code?code=10.01
-    @GetMapping("/search")
+    @GetMapping(value = "/search", params = "codigo")
     public ResponseEntity<List<ItemDTO>> searchByCode(@RequestParam("codigo") String query) {
         List<ItemDTO> results = service.findByCode(query);
 
         if (results.isEmpty()) {
-            return ResponseEntity.noContent().build(); // Retorna 204 se não achar nada
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(results);
     }
 
-    // URL: /item/search-desc?desc=branco
-    @GetMapping("/search")
+    @GetMapping(value = "/search", params = "descricao")
     public ResponseEntity<List<ItemDTO>> searchByDescription(@RequestParam("descricao") String query) {
         List<ItemDTO> results = service.findByDescription(query);
 

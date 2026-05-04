@@ -33,7 +33,7 @@ public class CorController {
         return ResponseEntity.ok(listCor);
     }
 
-    @GetMapping("/search")
+    @GetMapping(value = "/search", params = "codigo")
     public ResponseEntity<List<CorDTO>> findBySiglaCor(@RequestParam("codigo") String query){
         List<CorDTO> results = service.findBySiglaCor(query);
         if(results.isEmpty()){
@@ -42,7 +42,7 @@ public class CorController {
         return ResponseEntity.ok(results);
     }
 
-    @GetMapping("/search")
+    @GetMapping(value = "/search", params = "descricao")
     public ResponseEntity<List<CorDTO>> searchByDescricao(@RequestParam("descricao") String query){
         List<CorDTO> results = service.findByDescricao(query);
         if(results.isEmpty()){

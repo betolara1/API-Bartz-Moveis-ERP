@@ -19,7 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import bartzmoveis.apigetitem.service.CorService;
-import bartzmoveis.apigetitem.config.ApiKeyProperties;
 import bartzmoveis.apigetitem.dto.CorDTO;
 
 @WebMvcTest(CorController.class)
@@ -32,9 +31,6 @@ public class CorControllerTest {
     @MockitoBean
     private CorService service;
 
-    @MockitoBean
-    private ApiKeyProperties apiKeyProperties;
-
     private CorDTO mockCor;
 
     @BeforeEach
@@ -46,7 +42,7 @@ public class CorControllerTest {
     void listAll_ShouldReturnColors() throws Exception {
         when(service.listAll()).thenReturn(Arrays.asList(mockCor));
 
-        mockMvc.perform(get("/cor"))
+        mockMvc.perform(get("/cores"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].siglaCor", is("BR")));
@@ -56,7 +52,7 @@ public class CorControllerTest {
     void listAll_WhenEmpty_ShouldReturn204() throws Exception {
         when(service.listAll()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/cor"))
+        mockMvc.perform(get("/cores"))
                 .andExpect(status().isNoContent());
     }
 
@@ -64,7 +60,7 @@ public class CorControllerTest {
     void findBySiglaCor_WhenExists_ShouldReturn200() throws Exception {
         when(service.findBySiglaCor("BR")).thenReturn(Arrays.asList(mockCor));
 
-        mockMvc.perform(get("/cor/cor").param("code", "BR"))
+        mockMvc.perform(get("/cores/search").param("codigo", "BR"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].siglaCor", is("BR")));
@@ -74,7 +70,7 @@ public class CorControllerTest {
     void findBySiglaCor_WhenNotExists_ShouldReturn204() throws Exception {
         when(service.findBySiglaCor("XX")).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/cor/cor").param("code", "XX"))
+        mockMvc.perform(get("/cores/search").param("codigo", "XX"))
                 .andExpect(status().isNoContent());
     }
 
@@ -82,7 +78,7 @@ public class CorControllerTest {
     void searchByDescricao_WhenExists_ShouldReturn200() throws Exception {
         when(service.findByDescricao("Branco")).thenReturn(Arrays.asList(mockCor));
 
-        mockMvc.perform(get("/cor/descricao").param("desc", "Branco"))
+        mockMvc.perform(get("/cores/search").param("descricao", "Branco"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].descricao", is("Branco")));

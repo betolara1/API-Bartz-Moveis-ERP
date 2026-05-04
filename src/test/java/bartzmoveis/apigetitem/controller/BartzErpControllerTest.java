@@ -19,7 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import bartzmoveis.apigetitem.service.ItemService;
-import bartzmoveis.apigetitem.config.ApiKeyProperties;
 import bartzmoveis.apigetitem.dto.ItemDTO;
 
 @WebMvcTest(ItemController.class)
@@ -32,9 +31,6 @@ public class BartzErpControllerTest {
     @MockitoBean
     private ItemService service;
 
-    @MockitoBean
-    private ApiKeyProperties apiKeyProperties;
-
     private ItemDTO mockItem;
 
     @BeforeEach
@@ -46,7 +42,7 @@ public class BartzErpControllerTest {
     void listAll_ShouldReturnItems() throws Exception {
         when(service.listAll()).thenReturn(Arrays.asList(mockItem));
 
-        mockMvc.perform(get("/item"))
+        mockMvc.perform(get("/itens"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].codeItem", is("10.01")));
@@ -56,7 +52,7 @@ public class BartzErpControllerTest {
     void listAll_WhenEmpty_ShouldReturn204() throws Exception {
         when(service.listAll()).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/item"))
+        mockMvc.perform(get("/itens"))
                 .andExpect(status().isNoContent());
     }
 
@@ -64,7 +60,7 @@ public class BartzErpControllerTest {
     void searchByCode_WhenExists_ShouldReturn200() throws Exception {
         when(service.findByCode("10.01")).thenReturn(Arrays.asList(mockItem));
 
-        mockMvc.perform(get("/item/codigo").param("code", "10.01"))
+        mockMvc.perform(get("/itens/search").param("codigo", "10.01"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].codeItem", is("10.01")));
@@ -74,7 +70,7 @@ public class BartzErpControllerTest {
     void searchByCode_WhenNotExists_ShouldReturn204() throws Exception {
         when(service.findByCode("99.99")).thenReturn(Collections.emptyList());
 
-        mockMvc.perform(get("/item/codigo").param("code", "99.99"))
+        mockMvc.perform(get("/itens/search").param("codigo", "99.99"))
                 .andExpect(status().isNoContent());
     }
 
@@ -82,7 +78,7 @@ public class BartzErpControllerTest {
     void searchByDescription_WhenExists_ShouldReturn200() throws Exception {
         when(service.findByDescription("Armario")).thenReturn(Arrays.asList(mockItem));
 
-        mockMvc.perform(get("/item/descricao").param("desc", "Armario"))
+        mockMvc.perform(get("/itens/search").param("descricao", "Armario"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].description", is("Armario")));
