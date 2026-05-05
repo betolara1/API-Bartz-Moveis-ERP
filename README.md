@@ -4,7 +4,7 @@
 
 ### REST API de Integração (Ponte) para o ERP Legado (IBM DB2)
 
-[![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
+[![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://www.oracle.com/java/)
 [![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![IBM DB2](https://img.shields.io/badge/IBM_DB2-12.1-052FAD?style=for-the-badge&logo=ibm&logoColor=white)](https://www.ibm.com/products/db2)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
@@ -48,6 +48,7 @@ Construída com foco em **produção real**, a API incorpora:
 ```mermaid
 flowchart TB
   subgraph Application
+    Auth["AuthController"] --> Jwt["JwtUtil"]
     A1["ItemController"] --> B1["ItemService"]
     A2["CorController"] --> B2["CorService"]
     B1 --> C1["JdbcTemplate"]
@@ -62,15 +63,19 @@ flowchart TB
 📦 apigetitem
  ├── 🔐 security/            # Filtros de segurança (JWT-Package)
  ├── ⚙️ config/              # Configurações de Segurança e Swagger
- ├── 📡 controller/          # Endpoints REST (ItemController, CorController)
+ ├── 📡 controller/          # Endpoints REST (Auth, Item, Cor)
  ├── 🧩 service/             # Regras de negócio e Consultas SQL (JdbcTemplate)
- ├── 📤 dto/                 # Data Transfer Objects (ItemDTO, CorDTO)
+ ├── 📤 dto/                 # Data Transfer Objects (ItemDTO, CorDTO, LoginDTO)
  └── ⚠️ exceptions/          # Tratamento global de erros (GlobalExceptionHandler)
 ```
 
 ---
 
-## 🚀 Endpoints da API
+### 🔑 Autenticação (`/auth`)
+| Método | Endpoint | Parâmetro | Descrição | Auth |
+|--------|----------|-----------|-----------|------|
+| `POST` | `/auth/login` | `JSON Body` | Autenticação via JSON (Recomendado) | ❌ |
+| `GET` | `/auth/login` | `user`, `pass` | Autenticação via Query Params | ❌ |
 
 ### 📦 Itens (`/itens`)
 | Método | Endpoint | Parâmetro | Descrição | Auth |
@@ -92,6 +97,18 @@ flowchart TB
 
 A autenticação é baseada em **JWT (JSON Web Token)** de forma totalmente Stateless, utilizando o pacote modular `jwt-package`.
 
+### Como obter o Token
+Envie uma requisição para `/auth/login` com as credenciais administrativas configuradas no `.env`.
+
+**Exemplo (POST):**
+```json
+{
+  "username": "seu_usuario",
+  "password": "sua_senha"
+}
+```
+
+### Uso do Token
 **Header Obrigatório:**
 ```http
 Authorization: Bearer <seu_token_jwt>
@@ -125,13 +142,22 @@ A API possui cobertura de testes automatizados com JUnit 5 e Mockito:
 
 **1. Configure o arquivo `.env`:**
 ```env
+# Segurança JWT
 jwt.secret-key=sua_chave_secreta_com_no_minimo_32_chars
 jwt.excluded-paths=/auth/login, /swagger-ui/**, /v3/api-docs/**
 jwt.expiration-time=43200000
-DB_URL=jdbc:db2://seu_host:50000/nomedobanco
-DB_USERNAME=usuario_db2
-DB_PASSWORD=senha_db2
-DB_PORT=8080
+
+# Conexão DB2
+URL_DB=jdbc:db2://seu_host:50000/nomedobanco
+USERNAME_DB=usuario_db2
+PASSWORD_DB=senha_db2
+
+# Credenciais da API (Admin)
+USERNAME_LOGIN=admin
+PASSWORD_LOGIN=sua_senha_criptografada_bcrypt
+
+# Porta da Aplicação
+DB_PORT=8081
 ```
 
 **2. Suba o container:**
@@ -162,13 +188,13 @@ A API mapeia as seguintes informações do banco legado:
 
 | Tecnologia | Versão | Finalidade |
 |-----------|--------|------------|
-| Java | 17 (LTS) | Linguagem principal |
+| Java | 21 (LTS) | Linguagem principal |
 | Spring Boot | 3.4.2 | Framework web e IoC |
 | Spring JDBC | — | Acesso a dados via JdbcTemplate |
 | Spring Security | 6.4.x | Controle de acesso via JWT |
 | JWT Package | 1.0.3 | Pacote customizado para gestão de tokens |
 | IBM DB2 | 12.1 | Banco de dados legado |
-| SpringDoc OpenAPI | 2.0 | Documentação Swagger |
+| SpringDoc OpenAPI | 2.3.0 | Documentação Swagger |
 | Lombok | — | Redução de boilerplate |
 | Docker + Compose | — | Containerização |
 | JUnit 5 + Mockito | — | Testes automatizados |
