@@ -3,7 +3,6 @@ package bartzmoveis.apigetitem.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,11 +19,6 @@ import bartzmoveis.apigetitem.service.ItemService;
 // controlador, ou seja,
 // todos os endpoints começarão com /item
 @RequestMapping("/itens")
-
-// O @CrossOrigin é usado para permitir requisições de origens específicas, como
-// o frontend
-// rodando em localhost ou um arquivo local
-@CrossOrigin(origins = { "http://192.168.1.10:50000", "http://localhost:5173", "file://" })
 public class ItemController {
 
     private ItemService service;
