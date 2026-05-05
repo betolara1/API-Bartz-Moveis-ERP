@@ -14,36 +14,37 @@ import bartzmoveis.apigetitem.service.CorService;
 @RestController
 @RequestMapping("/cores")
 public class CorController {
-    
+
     private CorService service;
-    private CorController(CorService service){
+
+    private CorController(CorService service) {
         this.service = service;
     }
 
     @GetMapping
-    public ResponseEntity<List<CorDTO>> listAll(){
+    public ResponseEntity<List<CorDTO>> listAll() {
 
         List<CorDTO> listCor = service.listAll();
 
-        if(listCor.isEmpty()){
+        if (listCor.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(listCor);
     }
 
     @GetMapping(value = "/search", params = "codigo")
-    public ResponseEntity<List<CorDTO>> findBySiglaCor(@RequestParam("codigo") String query){
+    public ResponseEntity<List<CorDTO>> findBySiglaCor(@RequestParam("codigo") String query) {
         List<CorDTO> results = service.findBySiglaCor(query);
-        if(results.isEmpty()){
+        if (results.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(results);
     }
 
     @GetMapping(value = "/search", params = "descricao")
-    public ResponseEntity<List<CorDTO>> searchByDescricao(@RequestParam("descricao") String query){
+    public ResponseEntity<List<CorDTO>> searchByDescricao(@RequestParam("descricao") String query) {
         List<CorDTO> results = service.findByDescricao(query);
-        if(results.isEmpty()){
+        if (results.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(results);

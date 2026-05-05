@@ -12,12 +12,13 @@ import bartzmoveis.apigetitem.dto.CorDTO;
 @Service
 public class CorService {
     private JdbcTemplate jdbcTemplate;
-    public CorService(JdbcTemplate jdbcTemplate){
+
+    public CorService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Transactional(readOnly = true)
-    public List<CorDTO> listAll(){
+    public List<CorDTO> listAll() {
         String sql = "SELECT SIGLA_COR, DESCRICAO FROM db2admin.COR";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -31,9 +32,9 @@ public class CorService {
     }
 
     @Transactional(readOnly = true)
-    public List<CorDTO> findBySiglaCor(String siglaCor){
+    public List<CorDTO> findBySiglaCor(String siglaCor) {
         String sql = "SELECT SIGLA_COR, DESCRICAO FROM db2admin.COR " + "WHERE UPPER(SIGLA_COR) LIKE UPPER(?)";
-        
+
         String formattedSql = "%" + siglaCor + "%";
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -47,7 +48,7 @@ public class CorService {
     }
 
     @Transactional(readOnly = true)
-    public List<CorDTO> findByDescricao(String descricao){
+    public List<CorDTO> findByDescricao(String descricao) {
         String sql = "SELECT SIGLA_COR, DESCRICAO FROM db2admin.COR " + "WHERE UPPER(DESCRICAO) LIKE UPPER(?)";
 
         String formattedSql = "%" + descricao + "%";

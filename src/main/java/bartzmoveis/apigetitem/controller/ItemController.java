@@ -22,7 +22,8 @@ import bartzmoveis.apigetitem.service.ItemService;
 public class ItemController {
 
     private ItemService service;
-    private ItemController (ItemService service){
+
+    private ItemController(ItemService service) {
         this.service = service;
     }
 
@@ -30,12 +31,11 @@ public class ItemController {
     public ResponseEntity<List<ItemDTO>> listAll() {
         List<ItemDTO> listItem = service.listAll();
 
-        if(listItem.isEmpty()){
+        if (listItem.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(listItem);
     }
-
 
     // URL: /item/search-code?code=10.01
     @GetMapping(value = "/search", params = "codigo")
