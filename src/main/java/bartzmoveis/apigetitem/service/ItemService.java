@@ -27,8 +27,10 @@ public class ItemService {
         //Cada campo da tabela é mapeado para um campo do DTO
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ItemDTO dto = new ItemDTO();
-            dto.setCodeItem(rs.getString("ITEM"));
-            dto.setDescription(rs.getString("DESCRICAO"));
+            String item = rs.getString("ITEM").trim();
+            String descricao = rs.getString("DESCRICAO").trim();
+            dto.setCodeItem(item);
+            dto.setDescription(descricao + " (" + item + ")");
             dto.setRefComercial(rs.getString("REF_COMERCIAL"));
             return dto;
         });
@@ -45,8 +47,10 @@ public class ItemService {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ItemDTO dto = new ItemDTO();
-            dto.setCodeItem(rs.getString("ITEM"));
-            dto.setDescription(rs.getString("DESCRICAO"));
+            String item = rs.getString("ITEM").trim();
+            String descricao = rs.getString("DESCRICAO").trim();
+            dto.setCodeItem(item);
+            dto.setDescription(descricao + " (" + item + ")");
             dto.setRefComercial(rs.getString("REF_COMERCIAL"));
             return dto;
         }, formattedSql); // O formattedSql substitui o ? no SQL
@@ -60,8 +64,10 @@ public class ItemService {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             ItemDTO dto = new ItemDTO();
-            dto.setCodeItem(rs.getString("ITEM"));
-            dto.setDescription(rs.getString("DESCRICAO"));
+            String item = rs.getString("ITEM").trim();
+            String descricao = rs.getString("DESCRICAO").trim();
+            dto.setCodeItem(item);
+            dto.setDescription(descricao + " (" + item + ")");
             dto.setRefComercial(rs.getString("REF_COMERCIAL"));
             return dto;
         }, formattedSql);

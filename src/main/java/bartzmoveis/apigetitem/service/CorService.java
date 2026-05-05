@@ -22,8 +22,10 @@ public class CorService {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             CorDTO dto = new CorDTO();
-            dto.setSiglaCor(rs.getString("SIGLA_COR"));
-            dto.setDescricao(rs.getString("DESCRICAO"));
+            String sigla = rs.getString("SIGLA_COR").trim();
+            String descricao = rs.getString("DESCRICAO").trim();
+            dto.setSiglaCor(sigla);
+            dto.setDescricao(descricao + " (" + sigla + ")");
             return dto;
         });
     }
@@ -36,8 +38,10 @@ public class CorService {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             CorDTO dto = new CorDTO();
-            dto.setSiglaCor(rs.getString("SIGLA_COR"));
-            dto.setDescricao(rs.getString("DESCRICAO"));
+            String sigla = rs.getString("SIGLA_COR").trim();
+            String descricao = rs.getString("DESCRICAO").trim();
+            dto.setSiglaCor(sigla);
+            dto.setDescricao(descricao + " (" + sigla + ")");
             return dto;
         }, formattedSql);
     }
@@ -50,8 +54,10 @@ public class CorService {
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
             CorDTO dto = new CorDTO();
-            dto.setSiglaCor(rs.getString("SIGLA_COR"));
-            dto.setDescricao(rs.getString("DESCRICAO"));
+            String sigla = rs.getString("SIGLA_COR").trim();
+            String descricaoCor = rs.getString("DESCRICAO").trim();
+            dto.setSiglaCor(sigla);
+            dto.setDescricao(descricaoCor + " (" + sigla + ")");
             return dto;
         }, formattedSql);
     }
