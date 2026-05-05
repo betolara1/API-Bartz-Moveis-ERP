@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   api-getitem:
@@ -9,10 +8,3 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-    # Defina redes se precisar integrar localmente com o banco
-    # networks:
-    #   - bartz-network
-
-    # networks:
-    #   bartz-network:
-    #     driver: bridge

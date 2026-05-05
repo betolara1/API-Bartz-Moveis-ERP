@@ -2,12 +2,15 @@ package bartzmoveis.apigetitem.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.betolara1.jwt_package.config.JwtProperties;
 import com.betolara1.jwt_package.security.JwtAuthFilter;
 
 @Configuration
@@ -15,26 +18,31 @@ import com.betolara1.jwt_package.security.JwtAuthFilter;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final JwtProperties jwtProperties;
 
-    public SecurityConfig (JwtAuthFilter jwtAuthFilter, JwtProperties jwtProperties){
+    public SecurityConfig (JwtAuthFilter jwtAuthFilter){
         this.jwtAuthFilter = jwtAuthFilter;
-        this.jwtProperties = jwtProperties;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        // Converta a lista do .env para um array de Strings
-        String[] paths = jwtProperties.getExcludedPaths().toArray(new String[0]);
+        http.csrf(crsf -> crsf.disable())
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll() // LOGIN LIBERADO
+                .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+                .requestMatchers("/actuator/**").authenticated()
+                .anyRequest().authenticated() // OUTROS METODOS (PUT, POST, DELETE) REQUER AUTENTICAÇÃO DE TOKEN
+        )
+        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return http
-                .csrf(csrf -> csrf.disable()) // Obrigatório para APIs REST
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sem sessão no servidor
-                .authorizeHttpRequests(auth -> auth 
-                    .requestMatchers(paths).permitAll() // 'paths' usa os caminhos do .env!
-                    .anyRequest().authenticated()
-                )
-                .addFilterBefore(jwtAuthFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class).build();
+        return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }

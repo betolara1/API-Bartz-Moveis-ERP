@@ -1,5 +1,5 @@
 # Estágio de build (builder)
-FROM eclipse-temurin:17-jdk-alpine AS builder
+FROM eclipse-temurin:21-jdk-alpine AS builder
 WORKDIR /workspace/app
 
 # Copia os arquivos essenciais do maven e o pom
@@ -7,8 +7,19 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# Dá permissão de execução ao mvnw e baixa as dependências (faz cache na camada Docker)
+# Dá permissão de execução ao mvnw
 RUN chmod +x ./mvnw
+
+# Copia dependências locais e as instala no repositório interno do Maven
+COPY libs/ libs/
+RUN ./mvnw install:install-file \
+    -Dfile=libs/jwt-package-1.0.3.jar \
+    -DgroupId=com.betolara1 \
+    -DartifactId=jwt-package \
+    -Dversion=1.0.3 \
+    -Dpackaging=jar
+
+# Baixa as dependências (faz cache na camada Docker)
 RUN ./mvnw dependency:go-offline
 
 # Copia o restante do código-fonte
@@ -18,7 +29,7 @@ COPY src src
 RUN ./mvnw clean package -DskipTests
 
 # Estágio de runtime (produção)
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Adiciona um usuário não-root por questões de segurança
